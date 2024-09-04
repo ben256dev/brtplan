@@ -49,16 +49,16 @@ int main() {
     region sets_reg;
     region status_reg;
     */
-    int rows, cols
+    int rows, cols;
     getmaxyx(stdscr, rows, cols);
 
-    const int orig_x = 12;
-    const int keyboard_y = 9;
-    const int menu_x = 20;
-    WINDOW* win_orig = newwin(rows, orig_x, 0, 0);
-    WINDOW* win_keyboard = newwin(keyboard_y, cols - orig_x, 0, orig_x);
-    WINDOW* win_input = newwin(rows - keyboard_y, cols - orig_x - menu_x, keyboard_y, orig_x);
-    WINDOW* win_menu = newwin(rows - keyboard_y, menu_x, keyboard_y, cols - menu_x);
+    const int weekday_x = 5;
+    const int status_y = 3;
+    const int exercises_x = 15;
+    WINDOW* win_weekday = newwin(rows, weekday_x, 0, 0);
+    WINDOW* win_exercise = newwin(status_y, cols - weekday_x, 0, weekday_x);
+    WINDOW* win_status = newwin(rows - status_y, cols - weekday_x - exercises_x, status_y, weekday_x);
+    WINDOW* win_sets = newwin(rows - status_y, exercises_x, status_y, cols - exercises_x);
     refresh();
 
     /*
@@ -81,32 +81,40 @@ int main() {
 	    if (c == KEY_RESIZE)
 	    {
                     getmaxyx(stdscr, rows, cols);
-	            wresize(win_orig, rows, orig_x );
-	            wresize(win_keyboard, keyboard_y, cols - orig_x );
-	            wresize(win_input, rows - keyboard_y, cols - orig_x - menu_x);
-	            wresize(win_menu, rows - keyboard_y, menu_x);
-	            mvwin(win_menu, keyboard_y, cols - menu_x);
+	            wresize(win_weekday, rows, weekday_x );
+	            wresize(win_exercise, status_y, cols - weekday_x );
+	            wresize(win_status, rows - status_y, cols - weekday_x - exercises_x);
+	            wresize(win_sets, rows - status_y, exercises_x);
+	            mvwin(win_sets, status_y, cols - exercises_x);
 
-	            wclear(win_orig);
-	            wclear(win_keyboard);
-	            wclear(win_menu);
-	            wclear(win_input);
+
+	            wclear(win_weekday);
+	            wclear(win_exercise);
+	            wclear(win_sets);
+	            wclear(win_status);
 	    }
 
-            print_original(win_orig, quiz_flags);
-	    print_keyboard(win_keyboard);
-	    print_menu(win_menu, (quiz_flags & QUIZ_FLAGS_SINGLE_KEY_MODE_BIT) >> 2);
-	    print_input(win_input, vowel_index_selected, quiz_flags);
+	    box(win_weekday, 0, 0);
+	    wrefresh(win_weekday);
 
-	    c = wgetch(win_input);
+	    box(win_exercise, 0, 0);
+	    wrefresh(win_exercise);
+	    
+	    box(win_status, 0, 0);
+	    wrefresh(win_status);
+
+	    box(win_sets, 0, 0);
+	    wrefresh(win_sets);
+
+	    c = wgetch(win_status);
 
 	    refresh();
     }
 
-    delwin(week_win);
-    delwin(exercises_win);
-    delwin(sets_win);
-    delwin(status_win);
+    delwin(win_weekday);
+    delwin(win_exercise);
+    delwin(win_status);
+    delwin(win_sets);
     endwin();
 
     return 0;
